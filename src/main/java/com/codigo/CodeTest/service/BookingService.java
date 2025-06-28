@@ -9,4 +9,8 @@ public interface BookingService {
 
 	void cancelBooking(Long classId, Long userId);
 
+	void checkIn(Long id, Long userId);
+	
+	public void refundWaitlistCredits();
+
 }

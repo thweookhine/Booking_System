@@ -2,10 +2,12 @@ package com.codigo.CodeTest.serviceimpl;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -159,19 +161,59 @@ public class BookingServiceImpl implements BookingService {
 
 		if (userPackageOpt.isEmpty()
 				|| userPackageOpt.get().getRemainingCredits() < classSchedule.getRequiredCredits()) {
-			// can't book, remove from waitlist
 			waitlistRepository.delete(waitlist);
 			return;
 		}
 
 		UserPackage userPackage = userPackageOpt.get();
-		Booking booking = new Booking(user, classSchedule, userPackage, BookingStatus.BOOKED);
+		Booking booking = new Booking();
+		booking.setUserData(userData);
+		booking.setClassSchedule(classSchedule);
+		booking.setUserPackage(userPackage);
+		booking.setBookingTime(LocalDateTime.now());
+		booking.setStatus(BookingStatus.BOOKED);
 		bookingRepository.save(booking);
 
 		userPackage.setRemainingCredits(userPackage.getRemainingCredits() - classSchedule.getRequiredCredits());
-		packageRepository.save(userPackage);
+		userPackageRepo.save(userPackage);
 
 		waitlistRepository.delete(waitlist);
+	}
+
+	@Override
+	public void checkIn(Long id, Long userId) {
+
+		Booking booking = bookingRepository.findByUserIdAndClassScheduleId(userId, id)
+				.orElseThrow(() -> new BusinessException("Booking Not Found"));
+		
+		 if (booking.getStatus() != BookingStatus.BOOKED) {
+		        throw new BusinessException("Booking has been already cancelled!");
+		    }
+
+		    LocalDateTime now = LocalDateTime.now();
+		    if (now.isBefore(booking.getClassSchedule().getStartTime())) {
+		        throw new BusinessException("Cannot check in before class start.");
+		    }
+
+		    booking.setStatus(BookingStatus.CHECKED_IN);
+		    bookingRepository.save(booking);
+	}
+	
+	@Scheduled(cron = "0 0/10 * * * *") 
+	public void refundWaitlistCredits() {
+	    List<ClassSchedule> pastClasses = scheduleRepo.findAllEndedClasses(LocalDateTime.now());
+
+	    for (ClassSchedule cs : pastClasses) {
+	        List<Booking> waitlisted = bookingRepository.findAllByClassScheduleIdAndStatus(cs.getId(), BookingStatus.WAITLISTED);
+	        for (Booking booking : waitlisted) {
+	            Optional<UserPackage> upData = userPackageRepo.getMostRecentPackageForUser(booking.getUserData().getId(), cs.getCountry(), LocalDateTime.now());
+	            UserPackage up = upData.get();
+	            up.setRemainingCredits(up.getRemainingCredits() + cs.getRequiredCredits());
+	            userPackageRepo.save(up);
+	            booking.setStatus(BookingStatus.CANCELLED);
+	            bookingRepository.save(booking);
+	        }
+	    }
 	}
 
 }

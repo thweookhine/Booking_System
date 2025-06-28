@@ -1,11 +1,12 @@
 package com.codigo.CodeTest.repository;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.codigo.CodeTest.entity.UserPackage;
 
@@ -22,5 +23,18 @@ public interface UserPackageRepo extends JpaRepository<UserPackage, Long> {
         ORDER BY p.expiredAt ASC
         LIMIT 1
         """)
-    Optional<UserPackage> findAvailablePackageForUser(Long userId, String country, LocalDate currentDate);
+    Optional<UserPackage> findAvailablePackageForUser(Long userId, String country, LocalDateTime currentDateTime);
+    
+    @Query("""
+            SELECT up FROM UserPackage up
+            WHERE up.user.id = :userId
+              AND up.pkg.country = :country
+              AND up.expiryDate > :now
+            ORDER BY up.expiryDate DESC
+        """)
+        Optional<UserPackage> getMostRecentPackageForUser(
+            @Param("userId") Long userId,
+            @Param("country") String country,
+            @Param("now") LocalDateTime now
+        );
 }

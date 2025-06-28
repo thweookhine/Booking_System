@@ -1,15 +1,20 @@
 package com.codigo.CodeTest.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.codigo.CodeTest.dto.ClassScheduleDto;
 import com.codigo.CodeTest.dto.PackageDto;
 import com.codigo.CodeTest.dto.ResponseData;
+import com.codigo.CodeTest.entity.ClassSchedule;
 import com.codigo.CodeTest.service.ClassScheduleService;
 
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -23,14 +28,12 @@ public class ScheduleController {
 
 	@Autowired
 	private ClassScheduleService scheduleService;
-//	
-//	@PostMapping("/createSchedule")
-//    @PreAuthorize("hasRole('ADMIN')")
-//	public ResponseEntity<?> createSchedule(@Valid @RequestBody ClassScheduleDto req) {
-//    	scheduleService.createSchedule(req);
-//    	ResponseData<Object> apiResponse = new ResponseData<>(200, "Users fetched successfully", null);
-//    	return ResponseEntity.ok(apiResponse);
-//    }
-	
-	
+
+	@GetMapping("/schedule")
+	public ResponseEntity<?> getSchedulesByCountry(@RequestParam String country) {
+		List<ClassSchedule> schedules = scheduleService.getSchedules(country);
+		ResponseData<Object> apiResponse = new ResponseData<>(200, "Class Schedules fetched successfully", schedules);
+    	return ResponseEntity.ok(apiResponse);
+	}
+
 }

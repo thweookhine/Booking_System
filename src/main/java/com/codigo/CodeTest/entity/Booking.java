@@ -37,10 +37,7 @@ public class Booking {
     private UserPackage userPackage;
 	
 	private LocalDateTime bookingTime;
-	
-	private boolean isCheckIn;
-	
+
 	private BookingStatus status;
-	private LocalDateTime canceledAt;
 
 }

@@ -1,5 +1,5 @@
 package com.codigo.CodeTest.enums;
 
 public enum BookingStatus {
-	BOOKED, CANCELLED
+	BOOKED, CANCELLED, CHECKED_IN, WAITLISTED
 }

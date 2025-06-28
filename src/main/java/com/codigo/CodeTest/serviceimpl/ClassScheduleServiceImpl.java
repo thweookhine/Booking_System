@@ -1,5 +1,7 @@
 package com.codigo.CodeTest.serviceimpl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +27,11 @@ public class ClassScheduleServiceImpl implements ClassScheduleService{
 	public void createSchedule(ClassScheduleDto scheduleDto) {
 		ClassSchedule schedule = scheduleMapper.toEntity(scheduleDto);
 		scheduleRepo.save(schedule);
+	}
+
+	@Override
+	public List<ClassSchedule> getSchedules(String country) {
+		return scheduleRepo.findByCountry(country);
 	}
 
 }
