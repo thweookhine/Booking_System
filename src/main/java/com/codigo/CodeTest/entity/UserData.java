@@ -68,6 +68,6 @@ public class UserData {
     @OneToMany(mappedBy = "userData")
     private List<Booking> bookings;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "userData")
     private List<Waitlist> waitlists;
 }

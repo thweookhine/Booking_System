@@ -44,11 +44,11 @@ public class BookingServiceImpl implements BookingService {
 	@Autowired
 	private WaitlistRepository waitlistRepository;
 
-	private final RedisTemplate<String, Object> redisTemplate;
+	private final RedisTemplate<String, String> redisTemplate;
 
-	public BookingServiceImpl(RedisTemplate<String, Object> redisTemplate) {
-		this.redisTemplate = redisTemplate;
-	}
+	public BookingServiceImpl(RedisTemplate<String, String> redisTemplate) {
+        this.redisTemplate = redisTemplate;
+    }
 
 	@Override
 	@Transactional
@@ -121,7 +121,7 @@ public class BookingServiceImpl implements BookingService {
 
 		// Check for overlapping booking
 		boolean hasOverlap = bookingRepository.hasOverlappingClass(user.getId(), schedule.getStartTime(),
-				schedule.getEndTime());
+				schedule.getEndTime(), BookingStatus.BOOKED);
 		if (hasOverlap)
 			throw new BusinessException("Overlapping class booking");
 	}
@@ -133,7 +133,7 @@ public class BookingServiceImpl implements BookingService {
 		ClassSchedule classSchedule = scheduleRepo.findById(classId)
 				.orElseThrow(() -> new BusinessException("Schedule Class Not Found"));
 
-		Booking booking = bookingRepository.findByUserAndClassSchedule(userData, classSchedule)
+		Booking booking = bookingRepository.findByUserDataAndClassSchedule(userData, classSchedule)
 				.orElseThrow(() -> new BusinessException("No booking found"));
 
 		LocalDateTime now = LocalDateTime.now();
@@ -147,7 +147,7 @@ public class BookingServiceImpl implements BookingService {
 		}
 		bookingRepository.save(booking);
 
-		Optional<Waitlist> nextInLine = waitlistRepository.findFirstByClassScheduleOrderByCreatedAtAsc(classSchedule);
+		Optional<Waitlist> nextInLine = waitlistRepository.findFirstByClassScheduleOrderByAddedAtAsc(classSchedule);
 		if (nextInLine.isPresent()) {
 			bookFromWaitlist(nextInLine.get());
 		}
@@ -183,7 +183,7 @@ public class BookingServiceImpl implements BookingService {
 	@Override
 	public void checkIn(Long id, Long userId) {
 
-		Booking booking = bookingRepository.findByUserIdAndClassScheduleId(userId, id)
+		Booking booking = bookingRepository.findByUserDataIdAndClassScheduleId(userId, id)
 				.orElseThrow(() -> new BusinessException("Booking Not Found"));
 		
 		 if (booking.getStatus() != BookingStatus.BOOKED) {

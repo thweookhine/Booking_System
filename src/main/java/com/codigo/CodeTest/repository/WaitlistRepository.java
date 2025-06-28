@@ -11,7 +11,7 @@ import com.codigo.CodeTest.entity.Waitlist;
 
 public interface WaitlistRepository extends JpaRepository<Waitlist, Long> {
 	// Get the first user in the waitlist for a class (FIFO order)
-	Optional<Waitlist> findFirstByClassScheduleOrderByCreatedAtAsc(ClassSchedule classSchedule);
+	Optional<Waitlist> findFirstByClassScheduleOrderByAddedAtAsc(ClassSchedule classSchedule);
 
 	// Get all waitlist entries for a class
 	List<Waitlist> findByClassSchedule(ClassSchedule classSchedule);
@@ -20,5 +20,5 @@ public interface WaitlistRepository extends JpaRepository<Waitlist, Long> {
 	boolean existsByUserDataAndClassSchedule(UserData userData, ClassSchedule classSchedule);
 
 	// Delete waitlist entry by user and class
-	void deleteByUserAndClassSchedule(UserData userData, ClassSchedule classSchedule);
+	void deleteByUserDataAndClassSchedule(UserData userData, ClassSchedule classSchedule);
 }

@@ -14,24 +14,21 @@ import com.codigo.CodeTest.enums.BookingStatus;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
-	// Count bookings for a specific class (for capacity checking)
 	int countByClassSchedule(ClassSchedule classSchedule);
 
-	// Check if user already booked this class
-	Optional<Booking> findByUserAndClassSchedule(UserData user, ClassSchedule classSchedule);
+	Optional<Booking> findByUserDataAndClassSchedule(UserData userData, ClassSchedule classSchedule);
 
-	// Check for overlapping bookings
 	@Query("""
 			SELECT CASE WHEN COUNT(b) > 0 THEN TRUE ELSE FALSE END
 			FROM Booking b
-			WHERE b.user.id = :userId
+			WHERE b.userData.id = :userId
 			AND b.classSchedule.startTime < :endTime
 			AND b.classSchedule.endTime > :startTime
-			AND b.status = 'BOOKED'
+			AND b.status = :status
 			""")
-	boolean hasOverlappingClass(Long userId, LocalDateTime startTime, LocalDateTime endTime);
+	boolean hasOverlappingClass(Long userId, LocalDateTime startTime, LocalDateTime endTime, BookingStatus status);
 	
-    Optional<Booking> findByUserIdAndClassScheduleId(Long userId, Long classScheduleId);
+	Optional<Booking> findByUserDataIdAndClassScheduleId(Long userDataId, Long classScheduleId);
     
     List<Booking> findAllByClassScheduleIdAndStatus(Long classScheduleId, BookingStatus status);
 
