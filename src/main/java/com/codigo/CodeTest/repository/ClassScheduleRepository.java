@@ -11,7 +11,9 @@ import com.codigo.CodeTest.entity.ClassSchedule;
 
 public interface ClassScheduleRepository extends JpaRepository<ClassSchedule, Long> {
 
-	List<ClassSchedule> findByCountry(String country);
+//	List<ClassSchedule> findByCountry(String country);
+
+	List<ClassSchedule> findByStartTimeAfterAndCountry(LocalDateTime now, String country);
 
     @Query("SELECT cs FROM ClassSchedule cs WHERE cs.endTime < :now")
     List<ClassSchedule> findAllEndedClasses(@Param("now") LocalDateTime now);

@@ -1,21 +1,20 @@
 package com.codigo.CodeTest.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.codigo.CodeTest.dto.ClassScheduleDto;
 import com.codigo.CodeTest.dto.ResponseData;
-import com.codigo.CodeTest.entity.ClassSchedule;
 import com.codigo.CodeTest.service.AuthService;
 import com.codigo.CodeTest.service.BookingService;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @RestController
 @RequestMapping("/api/bookings")
@@ -28,6 +27,10 @@ public class BookingController {
 	private AuthService authService;
 	
 	@PostMapping("/{classId}")
+	@Operation(summary = "Book Class", description = "Book Class")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Booked Class Successfully"),
+			@ApiResponse(responseCode = "404", description = "Data Not Found!"),
+			@ApiResponse(responseCode = "400", description = "Business Error!")})
 	public ResponseEntity<?> bookClass(@PathVariable Long classId, @RequestParam Long userPackageId) {
 		Long userId = authService.getCurrentUserId();
 		String message = bookingService.bookClass(classId, userPackageId, userId);
@@ -36,6 +39,10 @@ public class BookingController {
     }
 	
 	@PostMapping("/{classId}/cancel")
+	@Operation(summary = "Cancel Booking", description = "Cancel Booking")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Canceled Booking Successfully"),
+			@ApiResponse(responseCode = "404", description = "Data Not Found!"),
+			@ApiResponse(responseCode = "400", description = "Business Error!")})
     public ResponseEntity<?> cancelBooking(@PathVariable Long classId) {
 		Long userId = authService.getCurrentUserId();
         bookingService.cancelBooking(classId, userId);
@@ -44,6 +51,10 @@ public class BookingController {
     }
 	
 	@PostMapping("/schedule/{id}/check-in")
+	@Operation(summary = "Checkin Class", description = "Check In Class")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Checked In Class Successfully"),
+			@ApiResponse(responseCode = "404", description = "Data Not Found!"),
+			@ApiResponse(responseCode = "400", description = "Business Error!")})
 	public ResponseEntity<?> checkIn(@PathVariable Long id) {
 		Long userId = authService.getCurrentUserId();
 		bookingService.checkIn(id, userId);

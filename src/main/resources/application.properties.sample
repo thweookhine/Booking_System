@@ -1,0 +1,22 @@
+# App Config
+server.port=8080
+
+# DB Config
+spring.datasource.url=jdbc:postgresql://localhost:5432/[yourDBName]
+spring.datasource.username=[yourPostgresUsername]
+spring.datasource.password=[yourDBPassword]
+spring.jpa.hibernate.ddl-auto=update
+
+logging.level.org.springframework.security=DEBUG
+
+# Security Config for JWT
+app.jwt.secret=[yourSecretKey]
+app.jwt.expiration=3600000
+
+# Redis Config
+spring.redis.host=localhost
+spring.redis.port=6379
+spring.cache.type=redis
+
+#swagger setup
+springdoc.swagger-ui.path=/swagger-ui.html

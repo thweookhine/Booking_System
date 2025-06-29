@@ -2,7 +2,6 @@ package com.codigo.CodeTest.controller;
 
 import java.util.List;
 
-import org.apache.catalina.security.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -75,10 +74,14 @@ public class PackageController {
 	}
 
 	@GetMapping("getPurchasedPackages")
+	@Operation(summary = "Get Purchased Packages", description = "Get Purchased Packages")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Purchased Packaged Fetched successfully"),
+			@ApiResponse(responseCode = "404", description = "Data Not Found!"),
+			@ApiResponse(responseCode = "400", description = "Business Error!")})
 	public ResponseEntity<?> getPurchasedPackages() {
 		Long userId = authService.getCurrentUserId();
 		List<UserPackageDto> list = userPackageService.getPurchasedPackages(userId);
-		ResponseData<List<UserPackageDto>> apiResponse = new ResponseData<>(200, "Package is puchased successfully", list);
+		ResponseData<List<UserPackageDto>> apiResponse = new ResponseData<>(200, "Purchased Packages fetched successfully", list);
 		return ResponseEntity.ok(apiResponse);
 	}
 }

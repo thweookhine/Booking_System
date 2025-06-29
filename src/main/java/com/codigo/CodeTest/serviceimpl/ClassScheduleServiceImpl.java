@@ -1,5 +1,6 @@
 package com.codigo.CodeTest.serviceimpl;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,7 @@ public class ClassScheduleServiceImpl implements ClassScheduleService{
 
 	@Override
 	public List<ClassSchedule> getSchedules(String country) {
-		return scheduleRepo.findByCountry(country);
+		return scheduleRepo.findByStartTimeAfterAndCountry(LocalDateTime.now(), country);
 	}
 
 }

@@ -16,8 +16,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
 	int countByClassSchedule(ClassSchedule classSchedule);
 
-	Optional<Booking> findByUserDataAndClassSchedule(UserData userData, ClassSchedule classSchedule);
-
 	@Query("""
 			SELECT CASE WHEN COUNT(b) > 0 THEN TRUE ELSE FALSE END
 			FROM Booking b

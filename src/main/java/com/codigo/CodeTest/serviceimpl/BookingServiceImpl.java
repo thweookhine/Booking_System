@@ -75,7 +75,7 @@ public class BookingServiceImpl implements BookingService {
 			int bookedCount = bookingRepository.countByClassSchedule(schedule);
 			if (bookedCount >= schedule.getMaxSlots()) {
 				addToWaitlist(classId, userId);
-				return "Class Schedule has reached maximum slots!";
+				return "Class Schedule has reached maximum slots!. You have been added to waitlist";
 			}
 
 			if (userPackage.getRemainingCredits() < schedule.getRequiredCredits()) {
@@ -133,7 +133,7 @@ public class BookingServiceImpl implements BookingService {
 		ClassSchedule classSchedule = scheduleRepo.findById(classId)
 				.orElseThrow(() -> new BusinessException("Schedule Class Not Found"));
 
-		Booking booking = bookingRepository.findByUserDataAndClassSchedule(userData, classSchedule)
+		Booking booking = bookingRepository.findByUserDataIdAndClassScheduleId(userData.getId(), classSchedule.getId())
 				.orElseThrow(() -> new BusinessException("No booking found"));
 
 		LocalDateTime now = LocalDateTime.now();

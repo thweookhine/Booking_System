@@ -4,5 +4,5 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface EmailService {
-	void send(String to, String subject, String body);
+	public boolean sendVerifyEmail(String email, String subject, String body);
 }

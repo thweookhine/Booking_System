@@ -101,7 +101,7 @@ public class AuthServiceImpl implements AuthService{
 		user.setResetToken(token);
 		userRepo.save(user);
 
-		emailService.send(email, "Reset Password", "Click: http://localhost:8080/auth/api/reset?token=" + token);
+		emailService.sendVerifyEmail(email, "Reset Password", "Click: http://localhost:8080/auth/api/reset?token=" + token);
 	}
 
 	public void resetPassword(String token, String newPassword) {
